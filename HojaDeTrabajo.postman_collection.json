@@ -1,0 +1,77 @@
+{
+	"info": {
+		"_postman_id": "6540c36b-cc69-4720-a7e8-4d1ff4f816d9",
+		"name": "HojaDeTrabajo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3149659",
+		"_collection_link": "https://universal-star-772432.postman.co/workspace/New-Team-Workspace~c28f58ac-1c2f-4457-b48e-0372a05b61a5/collection/3149659-6540c36b-cc69-4720-a7e8-4d1ff4f816d9?action=share&source=collection_link&creator=3149659"
+	},
+	"item": [
+		{
+			"name": "CargarCSV",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/cargar_csv",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cargar_csv"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AgregarRegistro",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\":200819119\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/agregar_registro",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"agregar_registro"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "listar",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/listar",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"listar"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

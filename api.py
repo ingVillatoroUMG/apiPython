@@ -1,83 +1,70 @@
-from flask import Flask, request, jsonify
+import csv
+from flask import Flask, jsonify, request
 
-app = Flask(__name__)
+##
+##   Estructura de lista simple
+##
 
-class Student:
-    def __init__(self, nombre, carnet):
-        self.nombre = nombre
-        self.carnet = carnet
+class Nodo:
+    def __init__(self, id):
+        self.id = id
         self.siguiente = None
 
-class ListaEstudiantes:
+class ListaSimple:
     def __init__(self):
         self.cabeza = None
 
-    def add_student(self, nombre, carnet):
-        new_student = Student(nombre, carnet)
-        if not self.cabeza:
-            self.cabeza = new_student
-        else:
-            current = self.cabeza
-            while current.siguiente:
-                current = current.siguiente
-            current.siguiente = new_student
+    def agregar_elemento(self, id):
+        nuevo_nodo = Nodo(id)
+        nuevo_nodo.siguiente = self.cabeza
+        self.cabeza = nuevo_nodo
 
-    def list_estudiantes(self):
-        estudiantes = []
-        current = self.cabeza
-        while current:
-            estudiantes.append({'nombre': current.nombre, 'carnet': current.carnet})
-            current = current.siguiente
-        return estudiantes
-
-    def delete_student(self, carnet):
-        if not self.cabeza:
-            return False
-
-        if self.cabeza.carnet == carnet:
+    def retirar_primero(self):
+        if self.cabeza:
             self.cabeza = self.cabeza.siguiente
-            return True
 
-        current = self.cabeza
-        while current.siguiente:
-            if current.siguiente.carnet == carnet:
-                current.siguiente = current.siguiente.siguiente
-                return True
-            current = current.siguiente
+    def retirar_ultimo(self):
+        if self.cabeza.siguiente == None:
+            self.cabeza = None
+        else:
+            actual = self.cabeza
+            while actual.siguiente.siguiente != None:
+                actual = actual.siguiente
+            actual.siguiente = None
 
-        return False
+    def obtener_lista(self):
+        lista = []
+        actual = self.cabeza
+        while actual:
+            lista.append(actual.id)
+            actual = actual.siguiente
+        return lista
 
-student_list = ListaEstudiantes()
+app = Flask(__name__)
+mi_lista = ListaSimple()
 
-@app.route('/add_student', methods=['POST'])
-def add_student():
-    data = request.json
-    nombre = data.get('nombre')
-    carnet = data.get('carnet')
-    if not nombre or not carnet:
-        return jsonify({'error': 'Nombre y Carnet Rquerido'}), 400
-    student_list.add_student(nombre, carnet)
-    return jsonify({'message': 'Estudiante registrado correctamente'}), 201
 
-@app.route('/list_estudiantes', methods=['GET'])
-def list_estudiantes():
-    estudiantes = student_list.list_estudiantes()
-    return jsonify({'estudiantes': estudiantes}), 200
+@app.route('/cargar_csv', methods=['GET'])
+def cargar_csv():
+    with open('estudiante.csv', newline='', encoding='utf-8') as archivo_csv:
+        lector_csv = csv.reader(archivo_csv)
+        next(lector_csv)  
+        for linea in lector_csv:
+            id = linea[0]
+            mi_lista.agregar_elemento(id)
+    return jsonify(mi_lista.obtener_lista())
 
-@app.route('/delete_student', methods=['DELETE'])
-def delete_student():
-    carnet = request.args.get('carnet')
-    if not carnet:
-        return jsonify({'error': 'carnet is required'}), 400
-    if student_list.delete_student(carnet):
-        return jsonify({'message': 'Student deleted successfully'}), 200
-    else:
-        return jsonify({'error': 'Student not found'}), 404
+@app.route('/agregar_registro', methods=['POST'])
+def agregar_registro():
+    datos = request.json
+    id = datos['id']
+    mi_lista.agregar_elemento(id)
+    return 'Registro agregado exitosamente'
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    return jsonify({'respuesta':'done'}),200
 
-if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=3000)
+@app.route('/listar', methods=['GET'])
+def listar():
+    return jsonify(mi_lista.obtener_lista())
 
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port='8080')
